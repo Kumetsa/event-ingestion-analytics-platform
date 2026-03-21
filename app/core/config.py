@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     app_env: str = "development"
 
     db_host: str = "localhost"
-    db_port: int = 5432
+    db_port: int = 5433
     db_name: str = "event_platform"
     db_user: str = "postgres"
     db_password: str = "1235"

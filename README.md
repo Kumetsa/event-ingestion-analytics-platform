@@ -18,3 +18,9 @@ Backend platform for ingesting, validating, and analyzing event data using FastA
 
 ## Current Status
 Milestone 1 - Project bootstrap in progress.
+
+## Local Setup
+
+### Start PostgreSQL
+```bash
+docker compose up -d

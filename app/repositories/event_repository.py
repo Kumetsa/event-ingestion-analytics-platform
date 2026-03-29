@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 
 from app.models.event import Event
 from app.schemas.event import EventCreate
@@ -23,3 +24,30 @@ class EventRepository:
         db.refresh(db_event)
 
         return db_event
+
+    def get_events(self,
+                   db: Session,
+                   event_type: str | None = None,
+                   event_source: str | None = None
+                   ) -> list[Event]:
+        """Return events, optionally filtered by type and source"""
+
+        query = select(Event)
+
+        if event_type:
+            query = query.where(Event.event_type == event_type)
+
+        if event_source:
+            query = query.where(Event.event_source == event_source)
+
+        query = query.order_by(Event.occurred_at.desc())
+
+        return list(db.scalars(query).all())
+
+    def get_event_by_event_id(self,
+                              db: Session,
+                              event_id: str,
+                              ) -> Event | None:
+        """Return a single event by event_id"""
+        query = select(Event).where(Event.event_id == event_id)
+        return db.scalar(query)

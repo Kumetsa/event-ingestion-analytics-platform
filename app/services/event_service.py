@@ -30,11 +30,19 @@ class EventService:
     def get_events(self,
                    db: Session,
                    event_type: str | None = None,
-                   event_source: str | None = None
+                   event_source: str | None = None,
+                   limit: int = 100,
+                   offset: int = 0,
                    ) -> list[Event]:
         """Retrieve all events optionally filtered by type and source."""
 
-        return self.event_repository.get_events(db=db, event_type=event_type, event_source=event_source)
+        return self.event_repository.get_events(
+            db=db,
+            event_type=event_type,
+            event_source=event_source,
+            limit=limit,
+            offset=offset,
+        )
 
     def get_event_by_event_id(self, db: Session, event_id: str) -> Event | None:
         """Retrieve a single event by its event_id."""

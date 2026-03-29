@@ -28,12 +28,16 @@ def get_events_endpoint(
         event_type: str | None = Query(default=None),
         event_source: str | None = Query(default=None),
         db: Session = Depends(get_db),
+        limit: int = Query(default=100, ge=1, le=500),
+        offset: int = Query(default=0, ge=0),
 ) -> list[EventResponse]:
-    """Retruns a list of events optionally filtered by type and source."""
+    """Return events with optional filtering and pagination."""
 
     events = event_service.get_events(db=db,
                                       event_type=event_type,
                                       event_source=event_source,
+                                      limit=limit,
+                                      offset=offset,
     )
     return [EventResponse.model_validate(event) for event in events]
 

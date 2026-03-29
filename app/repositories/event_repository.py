@@ -35,7 +35,9 @@ class EventRepository:
     def get_events(self,
                    db: Session,
                    event_type: str | None = None,
-                   event_source: str | None = None
+                   event_source: str | None = None,
+                   limit: int = 100,
+                   offset: int = 0,
                    ) -> list[Event]:
         """Return events, optionally filtered by type and source"""
 
@@ -47,7 +49,7 @@ class EventRepository:
         if event_source:
             query = query.where(Event.event_source == event_source)
 
-        query = query.order_by(Event.occurred_at.desc())
+        query = query.order_by(Event.occurred_at.desc()).limit(limit).offset(offset)
 
         return list(db.scalars(query).all())
 

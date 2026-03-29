@@ -3,6 +3,8 @@ Service layer for event-related business logic.
 """
 
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException, status
 
 from app.repositories.event_repository import EventRepository
 from app.schemas.event import EventCreate
@@ -17,7 +19,13 @@ class EventService:
 
     def create_event(self, db: Session, event_data: EventCreate) -> Event:
         """Create a new event record."""
-        return self.event_repository.create_event(db=db, event_data=event_data)
+        try:
+            return self.event_repository.create_event(db=db, event_data=event_data)
+        except IntegrityError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Event with event_id '{event_data.event_id}' already exists.",
+            ) from exc
 
     def get_events(self,
                    db: Session,

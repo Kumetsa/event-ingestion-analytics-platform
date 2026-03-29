@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select
 
 from app.models.event import Event
@@ -7,6 +8,7 @@ from app.schemas.event import EventCreate
 
 class EventRepository:
     def create_event(self, db: Session, event_data: EventCreate) -> Event:
+        """Create and persist a new event record."""
         db_event = Event(
             event_id=event_data.event_id,
             event_type=event_data.event_type,
@@ -20,8 +22,13 @@ class EventRepository:
         )
 
         db.add(db_event)
-        db.commit()
-        db.refresh(db_event)
+
+        try:
+            db.commit()
+            db.refresh(db_event)
+        except IntegrityError:
+            db.rollback()
+            raise
 
         return db_event
 
